@@ -53,7 +53,7 @@ library(shiny)
   )
 )
 
-.ui <- miniPage(
+ui <- miniPage(
   gadgetTitleBar(title = "TMC RStudio", right = NULL,
                  left = miniTitleBarCancelButton(inputId = "exit", label = "Exit")),
 
@@ -63,3 +63,17 @@ library(shiny)
     .test_and_submit_tab
   )
 )
+
+# Usage: create_terminal_app() creates a new terminal window that runs the shiny app server
+# Then use rstudioapi::viewer("http://127.0.0.1:6866")
+# The port and address are defined in cmd4 in the create_terminal_app() function
+# Since the terminal does not use Rstudio, when using this you cannot call rstudioapi eg. in login message
+# create_terminal_app()
+# rstudioapi::viewer("http://127.0.0.1:6866")
+create_terminal_app <- function() {
+  cmd1 <- "Rscript -e \"app_comp = list();"
+  cmd2 <- "app_comp[['ui']] <- tmcrstudioaddin::ui;"
+  cmd3 <- "app_comp[['server']] <- tmcrstudioaddin::server;"
+  cmd4 <- "shiny::runApp(appDir = app_comp, port = 6866, host = '127.0.0.1')\""
+  rstudioapi::terminalExecute(paste0(cmd1, cmd2, cmd3, cmd4))
+}

@@ -3,7 +3,7 @@ library(rstudioapi)
 
 source("R/Authentication.R")
 
-.server <- function(input, output) {
+server <- function(input, output) {
   # This function is run when the Run tests -button is pressed
   run_testrunner <- eventReactive(input$run_tests, {
     return(tmcRtestrunner::run_tests(print = TRUE))
