@@ -9,8 +9,8 @@ tmc_gadget <- function() {
 
   server <- server
 
-  shiny::runGadget(app = ui, server = server)
+  # shiny::runGadget(app = ui, server = server)
 
-  # create_terminal_app()
-  # rstudioapi::viewer("http://127.0.0.1:6866")
+  create_terminal_app()
+  rstudioapi::viewer("http://127.0.0.1:6866")
 }

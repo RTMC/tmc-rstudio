@@ -10,20 +10,25 @@ server <- function(input, output) {
   })
 
   # Function for the login button
-  observeEvent(input$login, {
+  log_in <- eventReactive(input$login, {
     # Authenticate with the values from the username and password input fields
     response <- tmcrstudioaddin::authenticate(input$username, input$password)
     title_and_message <- .get_title_and_message(response = response)
 
     # showDialog() needs RStudion version > 1.1.67
-    return(rstudioapi::showDialog(title = title_and_message$title,
-                           message = title_and_message$message,
-                           url = ""))
+    # return(rstudioapi::showDialog(title = title_and_message$title,
+    #                        message = title_and_message$message,
+    #                        url = ""))
+    return(title_and_message$message)
   })
 
   # Function for the exit button
   observeEvent(input$exit, {
     return(shiny::stopApp())
+  })
+
+  output$log_in_result <- renderText({
+    return <- log_in()
   })
 
   # render*-function renders UI content and corresponds to *Output-function in UI

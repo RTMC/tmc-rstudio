@@ -13,7 +13,8 @@ library(shiny)
     textInput("username", label = "Username", value = ""),
     passwordInput("password", label = "Password", value = ""),
 
-    actionButton(inputId = "login", label = "Log in")
+    actionButton(inputId = "login", label = "Log in"),
+    uiOutput(outputId = "log_in_result")
   )
 )
 
