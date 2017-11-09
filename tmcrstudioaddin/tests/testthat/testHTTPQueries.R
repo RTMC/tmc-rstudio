@@ -6,6 +6,9 @@ test_that("Exercises are downloaded correctly", {
   expect_true(dir.exists("resources/downloaded_exercises/Week1"))
 })
 test_that("organizations are fetched from the server",{
+  if(file.exists(".credentials.rds")){
+    file.remove(".credentials.rds")
+  }
   authenticate("rtest", "asdasdasd","https://tmc.mooc.fi")
   organizations<-getAllOrganizations()
   expect_true(length(organizations)>0)
@@ -13,11 +16,31 @@ test_that("organizations are fetched from the server",{
     expect_true(is.character(organization))
   }
 })
+test_that("empty organization list is returned if failed",{
+  if(file.exists(".credentials.rds")){
+    file.remove(".credentials.rds")
+  }
+  authenticate("rtest", "asdasdasd","https://tmc.mooasdc.fi")
+  organizations<-getAllOrganizations()
+  print(organizations)
+  expect_true(length(organizations)==0)
+})
 test_that("courses associated with server and organization are fetched from the server",{
+  if(file.exists(".credentials.rds")){
+    file.remove(".credentials.rds")
+  }
   authenticate("rtest", "asdasdasd","https://tmc.mooc.fi")
   courses<-getAllCourses("hy")
   expect_true(length(courses)>0)
   for(course in courses){
     expect_true(is.character(course))
   }
+})
+test_that("empty courses list is returned if failure",{
+  if(file.exists(".credentials.rds")){
+    file.remove(".credentials.rds")
+  }
+  authenticate("rtest", "asdasdasd","https://tmc.moasdoc.fi")
+  courses<-getAllCourses("hy")
+  expect_true(length(courses)==0)
 })
