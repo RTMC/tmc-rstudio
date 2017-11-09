@@ -1,7 +1,7 @@
 .loginTabUI <- function(id, label = "Login tab") {
   # Create a namespace function using the provided id
   ns <- shiny::NS(id)
-  credentials <-tmcrstudioaddin::getCredentials()
+
   miniTabPanel(
     title = "Log in",
     icon = icon("user-circle-o"),
@@ -12,7 +12,8 @@
 
 }
 .loginPane <-function(ns){
-  serverAddress = tmcrstudioaddin::getServerAddress()
+  credentials <- tmcrstudioaddin::getCredentials()
+  serverAddress <- credentials$serverAddress
   return(tagList(
     h1("Log in"),
     textInput(inputId = ns("username"), label = "Username", value = ""),
@@ -30,7 +31,9 @@
 .loginTab <- function(input, output, session) {
   ns <- shiny::NS("login")
   output$loginPane<-renderUI({
-    if(is.null(tmcrstudioaddin::getCredentials())){
+    credentials <- tmcrstudioaddin::getCredentials()
+    #if token is not defined, user is not logged in
+    if(is.null(credentials$token)){
       .loginPane(ns)
     }
     else{
@@ -46,14 +49,19 @@
                            url = "")
     # If user has saved credentials update view
     credentials<-tmcrstudioaddin::getCredentials()
-    if(!is.null(credentials)){
+    if(!is.null(credentials$token)){
       output$loginPane<-renderUI({
         .logoutPane(ns)
       })
     }
   })
   observeEvent(input$logout,{
-    tmcrstudioaddin::deleteCredentials()
+    #overwrite credentials, so that they contain only the last login address
+    tryCatch({
+      credentials <-tmcrstudioaddin::getCredentials()
+      credentials <- list(serverAddress=credentials$serverAddress)
+      tmcrstudioaddin::saveCredentials(credentials)
+    })
     output$loginPane<-renderUI({
       .loginPane(ns)
     })

@@ -43,3 +43,33 @@ upload_exercises <- function(token, exercise_id, file_location) {
 
   return(exercises_response)
 }
+
+getAllOrganizations <-function(){
+  credentials<-getCredentials()
+  if(!is.null(credentials$serverAddress)){
+    url <- paste(credentials$serverAddress,'/api/v8/org.json',sep="")
+    token<-credentials$token
+    req <- httr::GET(url = url, config = httr::add_headers(Authorization = token),encode="json")
+    organizations<-jsonlite::fromJSON(httr::content(req,"text"))
+    return(organizations$slug)
+  }
+  else{
+    return(NULL)
+  }
+}
+
+getAllCourses <- function(organization) {
+  credentials<-getCredentials()
+  if(!is.null(credentials$serverAddress)){
+    courses <- list(name=list())
+    serverAddress<-credentials$serverAddress
+    token <-credentials$token
+    url <- paste(serverAddress,"/api/v8/core/org/", organization, "/courses", sep = "")
+    req <- httr::GET(url = url, config = httr::add_headers(Authorization = token),encode="json")
+    courses <- jsonlite::fromJSON(httr::content(req,"text"))
+    return(courses$name)
+  }
+  else{
+    return(list())
+  }
+}
