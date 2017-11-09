@@ -45,31 +45,28 @@ upload_exercises <- function(token, exercise_id, file_location) {
 }
 
 getAllOrganizations <-function(){
-  credentials<-getCredentials()
-  if(!is.null(credentials$serverAddress)){
+  organizations<-tryCatch({
+    credentials<-getCredentials()
     url <- paste(credentials$serverAddress,'/api/v8/org.json',sep="")
     token<-credentials$token
     req <- httr::GET(url = url, config = httr::add_headers(Authorization = token),encode="json")
-    organizations<-jsonlite::fromJSON(httr::content(req,"text"))
-    return(organizations$slug)
-  }
-  else{
-    return(NULL)
-  }
+    jsonlite::fromJSON(httr::content(req,"text"))
+  },error=function(e){
+    list(slug=list())
+  })
+  return(organizations$slug)
 }
 
 getAllCourses <- function(organization) {
-  credentials<-getCredentials()
-  if(!is.null(credentials$serverAddress)){
-    courses <- list(name=list())
+  courses <- tryCatch({
+    credentials<-getCredentials()
     serverAddress<-credentials$serverAddress
     token <-credentials$token
     url <- paste(serverAddress,"/api/v8/core/org/", organization, "/courses", sep = "")
-    req <- httr::GET(url = url, config = httr::add_headers(Authorization = token),encode="json")
-    courses <- jsonlite::fromJSON(httr::content(req,"text"))
-    return(courses$name)
-  }
-  else{
-    return(list())
-  }
+    req <- stop_for_status(httr::GET(url = url, config = httr::add_headers(Authorization = token),encode="json"))
+    jsonlite::fromJSON(httr::content(req,"text"))
+  },error=function(e){
+    list(name=list())
+  })
+  return(courses$name)
 }
