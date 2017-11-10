@@ -1,7 +1,7 @@
 .courseTabUI <- function(id, label = "Course tab") {
   ns <- shiny::NS(id)
   organizations <-list()
-  organizations <-tryCatch({tmcrstudioaddin::getAllOrganizations()},error={list()})
+  organizations <-tmcrstudioaddin::getAllOrganizations()
   miniTabPanel(
     title = "Exercises",
     icon = icon("folder-open"),

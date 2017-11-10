@@ -15,6 +15,8 @@ test_that("organizations are fetched from the server",{
   for(organization in organizations){
     expect_true(is.character(organization))
   }
+
+  file.remove(".credentials.rds")
 })
 test_that("empty organization list is returned if failed",{
   if(file.exists(".credentials.rds")){
@@ -22,8 +24,9 @@ test_that("empty organization list is returned if failed",{
   }
   authenticate("rtest", "asdasdasd","https://tmc.mooasdc.fi")
   organizations<-getAllOrganizations()
-  print(organizations)
   expect_true(length(organizations)==0)
+
+  file.remove(".credentials.rds")
 })
 test_that("courses associated with server and organization are fetched from the server",{
   if(file.exists(".credentials.rds")){
@@ -35,6 +38,8 @@ test_that("courses associated with server and organization are fetched from the 
   for(course in courses){
     expect_true(is.character(course))
   }
+
+  file.remove(".credentials.rds")
 })
 test_that("empty courses list is returned if failure",{
   if(file.exists(".credentials.rds")){
@@ -43,4 +48,6 @@ test_that("empty courses list is returned if failure",{
   authenticate("rtest", "asdasdasd","https://tmc.moasdoc.fi")
   courses<-getAllCourses("hy")
   expect_true(length(courses)==0)
+
+  file.remove(".credentials.rds")
 })
