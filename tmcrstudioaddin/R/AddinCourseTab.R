@@ -1,7 +1,6 @@
 .courseTabUI <- function(id, label = "Course tab") {
   ns <- shiny::NS(id)
-  organizations <-list()
-  organizations <-tmcrstudioaddin::getAllOrganizations()
+  organizations <- tmcrstudioaddin::getAllOrganizations()
   miniTabPanel(
     title = "Exercises",
     icon = icon("folder-open"),
@@ -29,19 +28,19 @@
     input$courseSelect
   })
   observeEvent(input$organizationSelect,{
-    organization<-input$organizationSelect
-    courses <-tmcrstudioaddin::getAllCourses(organization)
-    updateSelectInput(session,"courseSelect",label = "Select course",choices=courses,selected=1)
+    organization <- input$organizationSelect
+    courses <- tmcrstudioaddin::getAllCourses(organization)
+    updateSelectInput(session, "courseSelect", label = "Select course", choices = courses, selected = 1)
   })
   observeEvent(input$refresh,{
-    organization<-input$organizationSelect
-    courses<-tmcrstudioaddin::getAllCourses(organization)
-    if(length(courses)==0){
-      credentials = tmcrstudioaddin::getCredentials()
+    organization <- input$organizationSelect
+    courses <- tmcrstudioaddin::getAllCourses(organization)
+    if(length(courses) == 0){
+      credentials <- tmcrstudioaddin::getCredentials()
       if(is.null(credentials$token)){
-        rstudioapi::showDialog("Not logged in","Please log in to see courses","")
+        rstudioapi::showDialog("Not logged in", "Please log in to see courses","")
       }
     }
-    updateSelectInput(session,"courseSelect",label = "Select course",choices=courses,selected=1)
-  },ignoreInit=TRUE)
+    updateSelectInput(session, "courseSelect", label = "Select course", choices = courses, selected = 1)
+  },ignoreInit = TRUE)
 }

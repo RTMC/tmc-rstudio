@@ -1,47 +1,51 @@
 library(httr)
 library(jsonlite)
 #authentication first fetches clientId and secret after that logs in with username and password
-authenticate <- function(username, password,serverAddress) {
+authenticate <- function(username, password, serverAddress) {
+
   tryCatch({
     response <- fetchClientIdAndSecret(serverAddress)
     status_code <- status_code(response)
-    if(status_code==200){
+    if(status_code == 200){
       clientID <- httr::content(response)$application_id
       secret <- httr::content(response)$secret
-      return(login(clientID,secret,username,password,serverAddress))
+      return(login(clientID, secret, username, password, serverAddress))
     }
-  },error=function(e){
-    response <-list(error_description="Invalid request",error="Bad request")
+    else{
+      stop()
+    }
+  },error = function(e){
+    response <-list(error_description = "Invalid request", error = "Bad request")
     return(response)
   })
 }
 #actual login function
-login <- function(clientID,secret,username,password,serverAddress){
+login <- function(clientID, secret, username, password, serverAddress){
   body <- paste(sep = "",
                 "grant_type=password&client_id=", clientID,
                 "&client_secret=", secret,
                 "&username=", username,
                 "&password=", password)
   # Authenticate
-  url = paste(serverAddress,"/oauth/token",sep="")
+  url = paste(serverAddress, "/oauth/token", sep="")
   req <- httr::POST(url = url, body = body)
   # if http status is ok return token
   if (status_code(req) == 200){
     # Extract the authentication token
     httr::stop_for_status(x = req, task = "Authenticate with TMC")
     token <- paste("Bearer", httr::content(req)$access_token)
-    credentials <- list(username=username,token=token,serverAddress=serverAddress)
+    credentials <- list(username = username,token = token,serverAddress = serverAddress)
     saveCredentials(credentials)
     return(token)
   }
   else{
-    response<-list(error_description="Check your username and/or password",error="Invalid credentials")
+    response <- list(error_description = "Check your username and/or password",error = "Invalid credentials")
     return(response)
   }
 }
 
 fetchClientIdAndSecret <-function(serverAddress){
-  url <- paste(serverAddress,"/api/v8/application/rstudio_plugin/credentials.json",sep="")
+  url <- paste(serverAddress, "/api/v8/application/rstudio_plugin/credentials.json", sep="")
   req <- httr::GET(url = url)
   return(req)
 }
