@@ -1,22 +1,10 @@
-create_exercise_metadata <- function(exercise_id, exercise_directory) {
-    course_directory_path <- file.path(exercise_directory, "metadata.json",
-                              fsep = .Platform$file.sep)
-    newfile <- file(course_directory_path)
-
-    export_json <- toJSON(list(id = exercise_id,
-                    name = basename(exercise_directory)),
-                    pretty = TRUE)
-
-    cat(export_json, file = newfile, sep = "\n")
-    close(newfile)
-}
-
 #Exercise_id is the identifier of the exercise. For example, 36463.
 #Target is the place where zip-file is stored, if it's not deleted.
 download_exercise <- function(exercise_id,
                         zip_target = getwd(),
                         zip_name = "temp.zip",
                         exercise_directory) {
+
   credentials <- tmcrstudioaddin::getCredentials()
   token <- credentials$token
   serverAddress <- credentials$serverAddress
@@ -34,27 +22,20 @@ download_exercise <- function(exercise_id,
 
   .tmc_unzip(zipfile_name = zip_path, target_folder = exercise_directory)
 
-  file.remove(zip_path)
-
   create_exercise_metadata(exercise_id, exercise_directory)
-
 
   return(exercises_response)
 }
 
 #Example course id: 242.
-download_all_exercises <- function(token, course_id) {
+download_all_exercises <- function(course_id) {
+    credentials <- tmcrstudioaddin::getCredentials()
+    token <- credentials$token
 
-    # The base url.  TODO Refactor this so that we can get
-    # the server the user has signed on.
-    #https://tmc.mooc.fi
-    base_url <- getServerAddress()
+    course_url <- tmcrstudioaddin::construct_course_url(course_id)
 
-    # Course url for the course we want to download.
-    course_url <- paste(sep = "", base_url, "/", "api/v8/courses",
-                        "/", course_id)
-
-    course_exercises_url <- paste(sep = "/", course_url, "exercises")
+    course_exercises_url <-
+      tmcrstudioaddin::construct_course_exercise_url(course_url)
 
     # We need the token in the header.
     url_config <- httr::add_headers(Authorization = token)
@@ -65,43 +46,11 @@ download_all_exercises <- function(token, course_id) {
 
     course_name_response <- httr::GET(course_url, config = url_config)
 
-    # Name of the course is retrieved from the server.
+    course_directory_path <-
+      tmcrstudioaddin::construct_directory_path(course_name_response)
 
-    course_name <- httr::content(course_name_response)$name
-    user_home <- Sys.getenv("HOME")
-    r_home <- file.path(user_home, "tmcr-projects")
-
-    # The path where we want to download the exercises.
-    course_directory_path <- file.path(r_home, course_name,
-                              fsep = .Platform$file.sep)
-
-    dir.create(course_directory_path, showWarnings = FALSE, recursive = TRUE)
-
-    json_exercises <- jsonlite::read_json("temp.json")
-
-    for (i in 1:length(json_exercises)) {
-      from_json_to_download(i, json_exercises, token, course_directory_path)
-    }
-
-    file.remove("temp.json")
-
+    tmcrstudioaddin::create_directory_and_download(course_directory_path, token)
 }
-
-# Helper function that takes as arguments the iteration number i that indicates
-# the number of the exercise to be downloaded, json_exercises which is the list
-# containing all the info of the course, token, and course_directory_path
-# (where we want to store the exercises).
-from_json_to_download <- function(exercise_iteration,
-  json_exercises, token, course_directory_path) {
-
-    exercise_id <- json_exercises[exercise_iteration][[1]]$id
-    exercise_name <- json_exercises[exercise_iteration][[1]]$name
-    exercise_dir <- paste(sep = "/", course_directory_path, exercise_name)
-
-    download_exercise(exercise_id, zip_target = course_directory_path,
-                      exercise_directory = exercise_dir)
-  }
-
 
 upload_exercise <- function(token, exercise_id, project_path,
                              server_address, zip_name = "temp",
@@ -112,6 +61,7 @@ upload_exercise <- function(token, exercise_id, project_path,
   url_config <- httr::add_headers(Authorization = token)
 
   .tmc_zip(project_path, zip_name)
+
   zipped_file <- paste(sep = "", getwd(), "/", zip_name, ".zip")
   submission_file <- httr::upload_file(zipped_file)
 
