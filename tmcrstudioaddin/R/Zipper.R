@@ -7,12 +7,3 @@
 .tmc_unzip <- function(zipfile_name, target_folder) {
   unzip(zipfile = zipfile_name, exdir = target_folder)
 }
-
-.tmc_tar <- function(folder, target) {
-  files_to_tar <- dir(folder, full.names = TRUE)
-  tar(tarfile = paste(sep = "", target, ".tar"), file = files_to_tar);
-}
-
-.tmc_untar <- function(tarfile_name, target_folder) {
-    untar(tarfile = tarfile_name, exdir = target_folder)
-}
