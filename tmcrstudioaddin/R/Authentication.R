@@ -64,8 +64,8 @@ deleteCredentials <- function(){
     file.remove(".credentials")
   }
 }
-getServerAddress <- function(){
 
+getServerAddress <- function(){
   if(!file.exists(".server")){
     return(NULL)
   }
@@ -75,9 +75,11 @@ getServerAddress <- function(){
 
   return(server)
 }
+
 saveCredentials <- function(credentials){
   saveRDS(credentials, ".credentials.rds")
 }
+
 getCredentials <- function(){
   credentials <- list()
   tryCatch({

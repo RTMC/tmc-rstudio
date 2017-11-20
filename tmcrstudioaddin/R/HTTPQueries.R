@@ -22,7 +22,7 @@ download_exercise <- function(exercise_id,
 
   .tmc_unzip(zipfile_name = zip_path, target_folder = exercise_directory)
 
-  create_exercise_metadata(exercise_id, exercise_directory)
+  tmcrstudioaddin::create_exercise_metadata(exercise_id, exercise_directory)
 
   return(exercises_response)
 }
@@ -45,9 +45,10 @@ download_all_exercises <- function(course_id) {
                                 write_disk("temp.json", overwrite = TRUE))
 
     course_name_response <- httr::GET(course_url, config = url_config)
+    course_name <- httr::content(course_name_response)$name
 
     course_directory_path <-
-      tmcrstudioaddin::construct_directory_path(course_name_response)
+      tmcrstudioaddin::construct_directory_path(course_name)
 
     tmcrstudioaddin::create_directory_and_download(course_directory_path, token)
 }
