@@ -1,5 +1,6 @@
 all_jsons_to_download <- function(json_exercises,
     token, course_directory_path) {
+
   for (i in 1:length(json_exercises)) {
     tmcrstudioaddin::from_json_to_download(i, json_exercises,
        course_directory_path)
@@ -18,9 +19,8 @@ construct_course_exercise_url <- function(course_url) {
   return(course_exercises_url)
 }
 
-construct_directory_path <- function(course_name_response) {
+construct_directory_path <- function(course_name) {
   # Name of the course is retrieved from the server.
-  course_name <- httr::content(course_name_response)$name
   user_home <- Sys.getenv("HOME")
   r_home <- file.path(user_home, "tmcr-projects")
 
@@ -49,7 +49,7 @@ create_exercise_metadata <- function(exercise_id,
     "metadata.json", fsep = .Platform$file.sep)
 
    newfile <- file(course_directory_path)
-   export_json <- toJSON(list(id = exercise_id,
+   export_json <- jsonlite::toJSON(list(id = exercise_id,
                    name = basename(exercise_directory)),
                    pretty = TRUE)
 
@@ -71,4 +71,21 @@ from_json_to_download <- function(exercise_iteration,
     download_exercise(exercise_id, zip_target = course_directory_path,
                       exercise_directory = exercise_dir,
                       exercise_name = exercise_name)
+}
+
+read_data_from_exercise <- function(course_name, exercise_name) {
+    path <- construct_directory_path(course_name)
+    metadata_path <- file.path(path, exercise_name, "metadata.json",
+        fsep = .Platform$file.sep)
+    json <- jsonlite::read_json(metadata_path)
+    return(json)
+}
+
+read_data_from_current_exercise <- function() {
+    metadata_path <- file.path(getwd(),
+            "metadata.json",
+            fsep = .Platform$file.sep)
+
+    json <- jsonlite::read_json(metadata_path)
+    return(json)
 }
