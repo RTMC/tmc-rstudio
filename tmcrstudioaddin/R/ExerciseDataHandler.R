@@ -14,7 +14,6 @@ construct_course_url <- function(course_id) {
 }
 
 construct_course_exercise_url <- function(course_url) {
-
   course_exercises_url <- paste(sep = "/", course_url, "exercises")
   return(course_exercises_url)
 }
@@ -42,8 +41,11 @@ create_directory_and_download <- function(course_directory_path, token) {
       file.remove("temp.json")
 }
 
-create_exercise_metadata <- function(exercise_id, exercise_directory) {
-  course_directory_path <- file.path(exercise_directory,
+create_exercise_metadata <- function(exercise_id,
+    exercise_directory, exercise_name) {
+
+  directory <- paste0(exercise_directory, "/", gsub("-", "/", exercise_name))
+  course_directory_path <- file.path(directory,
     "metadata.json", fsep = .Platform$file.sep)
 
    newfile <- file(course_directory_path)
@@ -67,5 +69,6 @@ from_json_to_download <- function(exercise_iteration,
     exercise_dir <- paste(sep = "/", course_directory_path, exercise_name)
 
     download_exercise(exercise_id, zip_target = course_directory_path,
-                      exercise_directory = exercise_dir)
+                      exercise_directory = exercise_dir,
+                      exercise_name = exercise_name)
 }

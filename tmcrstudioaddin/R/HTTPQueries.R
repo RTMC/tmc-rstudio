@@ -1,9 +1,18 @@
+all_jsons_to_download <- function(json_exercises,
+    token, course_directory_path) {
+  for (i in 1:length(json_exercises)) {
+    tmcrstudioaddin::from_json_to_download(i, json_exercises,
+       course_directory_path)
+  }
+}
+
 #Exercise_id is the identifier of the exercise. For example, 36463.
 #Target is the place where zip-file is stored, if it's not deleted.
 download_exercise <- function(exercise_id,
                         zip_target = getwd(),
                         zip_name = "temp.zip",
-                        exercise_directory) {
+                        exercise_directory,
+                        exercise_name) {
 
   credentials <- tmcrstudioaddin::getCredentials()
   token <- credentials$token
@@ -22,7 +31,7 @@ download_exercise <- function(exercise_id,
 
   .tmc_unzip(zipfile_name = zip_path, target_folder = exercise_directory)
 
-  create_exercise_metadata(exercise_id, exercise_directory)
+  create_exercise_metadata(exercise_id, exercise_directory, exercise_name)
 
   return(exercises_response)
 }
@@ -50,6 +59,22 @@ download_all_exercises <- function(course_id) {
       tmcrstudioaddin::construct_directory_path(course_name_response)
 
     tmcrstudioaddin::create_directory_and_download(course_directory_path, token)
+}
+
+# Helper function that takes as arguments the iteration number i that indicates
+# the number of the exercise to be downloaded, json_exercises which is the list
+# containing all the info of the course, token, and course_directory_path
+# (where we want to store the exercises).
+from_json_to_download <- function(exercise_iteration,
+  json_exercises, course_directory_path) {
+
+    exercise_id <- json_exercises[exercise_iteration][[1]]$id
+    exercise_name <- json_exercises[exercise_iteration][[1]]$name
+    exercise_dir <- paste(sep = "/", course_directory_path, exercise_name)
+
+    download_exercise(exercise_id, zip_target = course_directory_path,
+                      exercise_directory = exercise_dir,
+                      exercise_name = exercise_name)
 }
 
 upload_exercise <- function(token, exercise_id, project_path,
