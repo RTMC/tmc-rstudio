@@ -19,15 +19,19 @@
 
   # This function is run when the Run tests -button is pressed
   runTestrunner <- observeEvent(input$runTests, {
+    disable_submit_tab()
     withProgress(message= 'Running tests', value = 1, {
       runResults <- tmcRtestrunner::run_tests(print = TRUE)
     })
+
     reactive$testResults <- runResults$test_results
     reactive$runStatus <- runResults$run_status
     reactive$submitResults <- NULL
+    enable_submit_tab()
   })
 
   submitExercise <- observeEvent(input$submit, {
+    disable_submit_tab()
     output <- list()
     withProgress(message= 'Submitting exercise', value = 0, {
       output <- submitCurrent()
@@ -37,6 +41,7 @@
     reactive$testResults <- submitRes$tests
     reactive$runStatus <- "success"
     showMessage(submitRes)
+    enable_submit_tab()
   })
 
   showResults <- observeEvent(input$showAllResults, {
@@ -46,14 +51,17 @@
   # Renders a list showing the test results
   output$testResultsDisplay <- renderUI({
     if (is.null(reactive$testResults)) return()
+
     testResults = reactive$testResults
     showAll <- reactive$showAll
     html <- ""
+
     if (reactive$runStatus == "success") {
       html <- formatTestResults(testResults, showAll)
     } else {
       html <- .createRunSourcingFailHtml(runResults)
     }
+
     shiny::tagList(html)
   })
 }
@@ -185,4 +193,14 @@ createSingleResultDisplay <- function(testResults) {
                            style = "color: red;font-weight:bold"),
                     tags$p("TODO: traceback (runner doesnt return traceback yet)"))
   return(html)
+}
+
+# Disables the Run tests-, Submit to server- buttons and the Show all results checkbox
+disable_submit_tab <- function() {
+  disable_elements("runTests", "submit", "showAllResults")
+}
+
+# Enables the Run tests-, Submit to server- buttons and the Show all results checkbox
+enable_submit_tab <- function() {
+  enable_elements("runTests", "submit", "showAllResults")
 }

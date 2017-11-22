@@ -40,6 +40,7 @@
       .logoutPane(ns)
     }})
   observeEvent(input$login, {
+    disable_elements("login")
     # Authenticate with the values from the username and password input fields
     response <- tmcrstudioaddin::authenticate(input$username, input$password, input$serverAddress)
     titleAndMessage <- .getTitleAndMessage(response = response)
@@ -49,11 +50,14 @@
                            url = "")
     # If user has saved credentials update view
     credentials <- tmcrstudioaddin::getCredentials()
+
     if (!is.null(credentials$token)){
       output$loginPane <- renderUI({
         .logoutPane(ns)
       })
     }
+
+    enable_elements("login")
   })
   observeEvent(input$logout, {
     #overwrite credentials, so that they contain only the last login address
