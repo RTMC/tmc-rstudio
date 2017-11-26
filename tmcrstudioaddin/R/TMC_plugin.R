@@ -3,6 +3,7 @@
 
 tmcGadget <- function() {
   ui <- miniPage(
+    shinyjs::useShinyjs(),
     gadgetTitleBar(title = "TMC RStudio", right = NULL,
                    left = miniTitleBarCancelButton(inputId = "exit", label = "Exit")),
 

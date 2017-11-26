@@ -19,15 +19,18 @@
 
   # This function is run when the Run tests -button is pressed
   runTestrunner <- observeEvent(input$runTests, {
+    tmcrstudioaddin::disable_submit_tab()
     withProgress(message= 'Running tests', value = 1, {
       runResults <- tmcRtestrunner::run_tests(print = TRUE)
     })
     reactive$testResults <- runResults$test_results
     reactive$runStatus <- runResults$run_status
     reactive$submitResults <- NULL
+    tmcrstudioaddin::enable_submit_tab()
   })
 
   submitExercise <- observeEvent(input$submit, {
+    tmcrstudioaddin::disable_submit_tab()
     output <- list()
     withProgress(message= 'Submitting exercise', value = 0, {
       output <- submitCurrent()
@@ -37,6 +40,7 @@
     reactive$testResults <- submitRes$tests
     reactive$runStatus <- "success"
     showMessage(submitRes)
+    tmcrstudioaddin::enable_submit_tab()
   })
 
   showResults <- observeEvent(input$showAllResults, {
