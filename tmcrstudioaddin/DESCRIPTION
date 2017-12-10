@@ -18,6 +18,7 @@ Imports:
   tmcRtestrunner,
   jsonlite,
   shinyjs,
+  shinyBS,
   mockery
 Depends:
   testthat,
