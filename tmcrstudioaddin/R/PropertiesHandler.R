@@ -5,20 +5,30 @@
 #'
 #' @usage create_properties_file(tmcr_projects = "tmcr-projects")
 #'
+#' @param user_set Should be TRUE if user has selected the directory, FALSE if created
+#' with default settings. TRUE by default.
 #' @param tmcr_projects Name of the directory where the exercises are downloaded into.
 #' \code{tmcr-projects} by default.
+#' @param tmcr_directory Name of the directory where tmcr_projects is created, .credentials
+#' is etc. \code{NA} by default.
 #'
 #' @return Always \code{NULL}.
 #'
 #' @seealso \code{\link{get_tmcr_directory}}, \code{\link[base]{saveRDS}}
-create_properties_file <- function(tmcr_projects = "tmcr-projects") {
+create_properties_file <- function(user_set = TRUE,
+  tmcr_projects = "tmcr-projects",
+  tmcr_directory = NA) {
+  
+  if (is.na(tmcr_directory)) {
+    user_home <- Sys.getenv("HOME")
+    tmcr_directory <- file.path(user_home, "tmcr")
+  }
 
-  tmcr_directory <- tmcrstudioaddin::get_tmcr_directory()
-  properties_path <- paste(tmcr_directory, ".properties.rds",
-                            sep = .Platform$file.sep)
+  properties <- list("tmcr_projects" = 
+      paste(tmcr_directory, tmcr_projects, sep = .Platform$file.sep),
+    "tmcr_dir" = tmcr_directory, "relative" = FALSE, user_set = user_set)
 
-  properties <- list("tmcr-dir" = paste(tmcrstudioaddin::get_tmcr_directory(),
-          tmcr_projects, sep = .Platform$file.sep), "relative" = FALSE)
+  properties_path <- get_properties_location()
 
   saveRDS(properties, properties_path)
 }
@@ -35,8 +45,7 @@ create_properties_file <- function(tmcr_projects = "tmcr-projects") {
 #'
 #' @seealso \code{\link{get_tmcr_directory}}, \code{\link[base]{file.exists}}
 check_if_properties_exist <- function() {
-  properties_path <- paste(tmcrstudioaddin::get_tmcr_directory(),
-                        ".properties.rds", sep = .Platform$file.sep)
+  properties_path <- get_properties_location()
 
   return(file.exists(properties_path))
 }
@@ -57,11 +66,11 @@ check_if_properties_exist <- function() {
 #' @seealso \code{\link[base]{Sys.getenv}}, \code{\link[base]{file.path}},
 #' \code{\link[base]{files2}}
 get_tmcr_directory <- function() {
-  user_home <- normalizePath("~", winslash = "/")
-  tmcr_directory <- file.path(user_home, "tmcr")
+  properties <- read_properties()
+  tmcr_directory <- properties$tmcr_dir
 
   if (!dir.exists(tmcr_directory)) {
-    dir.create(tmcr_directory)
+    dir.create(tmcr_directory, recursive = TRUE)
   }
 
   return(tmcr_directory)
@@ -74,16 +83,19 @@ get_tmcr_directory <- function() {
 #'
 #' @usage get_projects_folder()
 #'
-#' @details TODO: Do this after PropertiesHandler.R refactoring
+#' @details Reads the location of tmcr directory from .properties, creates the directory
+#' if it doesn't exist and returns the path.
+#'
+#' @return The path to tmcr directory
 get_projects_folder <- function() {
-  properties_list <- tmcrstudioaddin::read_properties()
-  if (length(properties_list$`tmcr-dir`[1]) == 0) {
-    return(paste(tmcrstudioaddin::get_tmcr_directory(),
-      "tmcr-projects", sep = .Platform$file.sep))
-  } else {
-    return(properties_list$`tmcr-dir`[1])
+  properties <- read_properties()
+  tmcr_directory <- properties$tmcr_projects
+
+  if (!dir.exists(tmcr_directory)) {
+    dir.create(tmcr_directory, recursive = TRUE)
   }
 
+  return(tmcr_directory)
 }
 
 #' @title Read the properties file
@@ -102,10 +114,27 @@ get_projects_folder <- function() {
 #' \code{\link{get_tmcr_directory}}, \code{\link[base]{readRDS}}
 read_properties <- function() {
   if (!check_if_properties_exist()) {
-    create_properties_file()
+    create_properties_file(user_set = FALSE)
   }
 
-  properties_path <- paste(tmcrstudioaddin::get_tmcr_directory(),
-      ".properties.rds", sep = .Platform$file.sep)
+  properties_path <- get_properties_location()
+  
   return(readRDS(properties_path))
+}
+
+#' @title Get location of properties file
+#'
+#' @description Checks the location where tmcRtestrunner is installed with \code{installed.packages}
+#'
+#' @usage get_properties_location()
+#'
+#' @return Path to the desired .properties file, i.e. install folder of tmcRtestrunner
+get_properties_location <- function() {
+  addin_root_dir <- installed.packages()["tmcRtestrunner", "LibPath"]
+  addin_dir <- paste(addin_root_dir, "tmcrstudioaddin", sep = "/")
+
+  properties_path <- paste(addin_dir, ".properties.rds",
+                            sep = .Platform$file.sep)
+
+  return(properties_path)
 }

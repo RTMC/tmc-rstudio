@@ -7,6 +7,7 @@ test_that("Properties created", {
   restore_properties_file_backup()
 })
 
+# may need to refactor
 test_that("TMC's home directory is correct", {
   backup_properties_file()
 
@@ -25,9 +26,7 @@ test_that("Properties are read as expected", {
   create_properties_file()
   properties <- read_properties()
 
-  expect_equal(properties$`tmcr-dir`,
-      paste(tmcrstudioaddin::get_tmcr_directory(), "tmcr-projects",
-            sep = .Platform$file.sep))
+  expect_equal(properties$"tmcr_dir", tmcrstudioaddin::get_tmcr_directory())
 
   restore_properties_file_backup()
 })
