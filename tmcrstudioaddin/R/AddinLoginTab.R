@@ -34,7 +34,7 @@
   ns <- shiny::NS("login")
 
   .suggestServer()
-
+  
   output$loginPane <- renderUI({
     credentials <- tmcrstudioaddin::getCredentials()
     #if token is not defined, user is not logged in
@@ -45,7 +45,7 @@
       .logoutPane(ns)
     }
   })
-
+  
   observeEvent(input$login, {
     if(UI_disabled) return()
 
