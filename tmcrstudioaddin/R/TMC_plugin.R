@@ -10,9 +10,6 @@
 #' @details The TMC \code{RStudio} addin was made using \code{\link[shiny]{shiny-package}}, which
 #' allows making web applications and \code{RStudio} addins using \code{R}.
 tmcGadget <- function() {
-  # Assign the UI_disabled variable as a global variable
-  assign(x = "UI_disabled", value = FALSE, envir = .GlobalEnv)
-
   ui <- miniPage(
     shinyjs::useShinyjs(),
 
@@ -27,8 +24,9 @@ tmcGadget <- function() {
   )
 
   server <- function(input, output, session) {
-
-    globalReactiveValues <- reactiveValues(downloadedExercises = downloadedExercisesPaths())
+    globalReactiveValues <- reactiveValues(
+      downloadedExercises = downloadedExercisesPaths(),
+      UIDisabled = FALSE)
 
     # Function for the exit button
     observeEvent(input$exit, {
@@ -45,6 +43,9 @@ tmcGadget <- function() {
         title = "Select the location for downloaded tmcr projects",
         footer = actionButton("set_dir", "Set directory")
       ))
+
+      # In case user exits the modalDialog without setting directory
+      read_properties()$user_set
     }
 
     observeEvent(input$set_dir, {
