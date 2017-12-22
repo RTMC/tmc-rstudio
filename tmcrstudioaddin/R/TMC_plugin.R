@@ -35,6 +35,7 @@ tmcGadget <- function() {
       return(shiny::stopApp())
     })
 
+    # Function for choosing project location if it is not already chosen
     if (!read_properties()$user_set) {
       showModal(modalDialog(
         textInput(inputId = "tmcr_dir",
@@ -48,12 +49,16 @@ tmcGadget <- function() {
       read_properties()$user_set
     }
 
+    # Setting the directory when button is pressed
     observeEvent(input$set_dir, {
       tryCatch({
         parent_dir <- input$tmcr_dir
         parent_dir <- normalizePath(parent_dir)
         tmcr_dir <- file.path(parent_dir, "tmcr")
+        
         create_properties_file(user_set = TRUE, tmcr_directory = tmcr_dir)
+        create_projects_directory()
+        .suggestServer()
         removeModal()
       }, warning = function(w) {
         rstudioapi::showDialog(

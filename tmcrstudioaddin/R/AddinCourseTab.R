@@ -82,7 +82,11 @@
     organization <- input$organizationSelect
     credentials <- tmcrstudioaddin::getCredentials()
     credentials$organization <- organization
-    tmcrstudioaddin::saveCredentials(credentials)
+
+    if (tmcr_directory_exists()) {
+      tmcrstudioaddin::saveCredentials(credentials)
+    }
+    
     courses <- tmcrstudioaddin::getAllCourses(organization)
     choices <- courses$id
     names(choices) <- courses$title
@@ -157,7 +161,7 @@
         courses <- tmcrstudioaddin::getAllCourses(organization)
         courseName <- courses$name[courses$id==input$courseSelect]
 
-        course_directory_path <- file.path(get_projects_folder(), courseName,
+        course_directory_path <- file.path(get_projects_directory(), courseName,
           fsep = .Platform$file.sep)
 
         if(!dir.exists(course_directory_path)){

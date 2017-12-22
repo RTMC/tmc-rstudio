@@ -12,7 +12,7 @@
 #' @return Exercise as a named vector: \code{c(name = path)}. If the current working directory
 #' isn't a valid exercise project folder, returns \code{c(" ", " ")}.
 #'
-#' @seealso \code{\link[base]{basename}}, \code{\link[base]{getwd}}, \code{\link{get_projects_folder}}
+#' @seealso \code{\link[base]{basename}}, \code{\link[base]{getwd}}, \code{\link{get_projects_directory}}
 #' \code{\link{pathIsExercise}}, \code{\link{getExerciseName}}, \code{\link[stats]{setNames}}
 
 # Returns the exercise that is selected in wd.
@@ -22,7 +22,7 @@ exercisePathFromWd <- function() {
   dirname <- dirname(getwd())
   basename <- basename(getwd())
 
-  wdIsInProjectsDir <- grepl(paste0("^", get_projects_folder()), getwd())
+  wdIsInProjectsDir <- grepl(paste0("^", get_projects_directory()), getwd())
 
   # Current wd is not an exercise (a folder in exercises_path)
   if(!pathIsExercise(getwd()) || !wdIsInProjectsDir) {
@@ -43,13 +43,13 @@ exercisePathFromWd <- function() {
 #'
 #' @return List of downloaded exercises as named vector \code{c(name = path)}format.
 #'
-#' @seealso \code{\link{findExercisesFromPath}}, \code{\link{get_projects_folder}},
+#' @seealso \code{\link{findExercisesFromPath}}, \code{\link{get_projects_directory}},
 #' \code{\link{getExerciseName}}, \code{\link[stats]{setNames}}
 
 # Returns a list of downloaded exercises as named vector format.
 # For example: c(name = path, name1 = path1, name2 = path2)
 downloadedExercisesPaths <- function() {
-  exercisePaths = findExercisesFromPath(get_projects_folder())
+  exercisePaths = findExercisesFromPath(get_projects_directory())
   names <- vector()
   for(exercisePath in exercisePaths) {
     names <- c(names, getExerciseName(exercisePath))

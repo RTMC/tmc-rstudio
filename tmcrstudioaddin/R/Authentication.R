@@ -186,9 +186,13 @@ saveCredentials <- function(credentials){
 #' @seealso \code{\link[base]{readRDS}}
 getCredentials <- function(){
   credentials <- list()
-  tryCatch({
+
+  if (tmcr_directory_exists()) {
+    tryCatch({
     credentials <- readRDS(paste(get_tmcr_directory(), ".credentials.rds",
       sep = .Platform$file.sep))
-  }, warning = function(e){})
+    }, warning = function(e){})
+  }
+
   return(credentials)
 }

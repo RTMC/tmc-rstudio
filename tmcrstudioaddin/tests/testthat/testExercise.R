@@ -23,7 +23,7 @@ test_that("findExercisesFromPath find right projects for containsProjects", {
 })
 
 test_that("downloadedExercises returns only empty for noProjectsDir", {
-  with_mock(get_projects_folder = function(x) return(noProjectsDir), {
+  with_mock(get_projects_directory = function(x) return(noProjectsDir), {
     result <- downloadedExercisesPaths()
     expect_equal(length(result), 1)
     expect_equal(names(result)[[1]], "")
@@ -32,7 +32,7 @@ test_that("downloadedExercises returns only empty for noProjectsDir", {
 })
 
 test_that("downloadedExercises returns correct names and paths for containsProjects", {
-  with_mock(get_projects_folder = function(x) return(containsProjects), {
+  with_mock(get_projects_directory = function(x) return(containsProjects), {
     result <- downloadedExercisesPaths()
     resultNames <- names(result)
 
@@ -50,7 +50,7 @@ test_that("downloadedExercises returns correct names and paths for containsProje
 
 test_that("exercisePathFromWd returns empty when wd is not a project", {
   with_mock(getwd = function(x) return(noProjectsDir),
-            get_projects_folder = function(x) return(noProjectsDir), {
+            get_projects_directory = function(x) return(noProjectsDir), {
     result <- exercisePathFromWd()
 
     expect_equal(length(result), 1)
@@ -61,7 +61,7 @@ test_that("exercisePathFromWd returns empty when wd is not a project", {
 
 test_that("exercisePathFromWd returns right output for a project wd", {
   with_mock(getwd = function(x) return(file.path(containsProjects, "simple_all_tests_pass")),
-            get_projects_folder = function(x) return(containsProjects), {
+            get_projects_directory = function(x) return(containsProjects), {
     result <- exercisePathFromWd()
 
     expect_equal(length(result), 1)

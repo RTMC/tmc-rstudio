@@ -20,7 +20,7 @@
     passwordInput(inputId = ns("password"), label = "Password", value = ""),
     div(style = "position:relative;", actionButton(inputId = ns("login"), label = "Log in")),
     div(style = "margin-top:30px;", textInput(inputId = ns("serverAddress"), label = "Server address", value =
-                ifelse(!is.null(serverAddress), serverAddress, ""))),
+                ifelse(!is.null(serverAddress), serverAddress, "https://tmc.mooc.fi"))),
     div(style = "position:relative", checkboxInput(inputId = ns("changeServer"), label = "Change server address", value = FALSE),
       actionButton(inputId = ns("resetServer"), label = "Reset server address"))
   ))
@@ -33,8 +33,6 @@
 
 .loginTab <- function(input, output, session, globalReactiveValues) {
   ns <- shiny::NS("login")
-
-  .suggestServer()
 
   output$loginPane <- renderUI({
     credentials <- tmcrstudioaddin::getCredentials()
@@ -113,7 +111,10 @@
       token <- credentials$token
 
       credentials <- list(username = username, token = token, serverAddress = defaultServerAddress)
-      saveCredentials(credentials)
+      
+      if (tmcr_directory_exists()) {
+        tmcrstudioaddin::saveCredentials(credentials)
+      }
     }
   }, warning = function(e){})
 }

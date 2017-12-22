@@ -69,11 +69,39 @@ get_tmcr_directory <- function() {
   properties <- read_properties()
   tmcr_directory <- properties$tmcr_dir
 
+  return(tmcr_directory)
+}
+
+#' @title Get the tmcr directory path
+#'
+#' @description Chech whether directory tmcr exists in the location defined by .properties
+#'
+#' @usage tmcr_directory_exists()
+#'
+#' @return Yes if directory tmcr exists, no otherwise
+#'
+#' @seealso \code{\link[base]{dir.exists}}, \code{\link{read_properties}}
+tmcr_directory_exists <- function() {
+  return(dir.exists(read_properties()$tmcr_dir))
+}
+
+#' @title Create the folder structure tmcr/tmcr-projects if they don't already exist.
+#'
+#' @description Checks it tmc-projects exists in the place defined by .properties and
+#' creates it if it doesn't.
+#'
+#' @usage create_projects_directory()
+#'
+#' @return Always \code{NULL}.
+#'
+#' @seealso \code{\link[base]{dir.exists}},\code{\link[base]{dir.create}},
+#' \code{\link{read_properties}}
+create_projects_directory <- function() {
+  properties <- read_properties()
+  tmcr_directory <- properties$tmcr_projects
   if (!dir.exists(tmcr_directory)) {
     dir.create(tmcr_directory, recursive = TRUE)
   }
-
-  return(tmcr_directory)
 }
 
 #' @title Get the TMC R-project directory path
@@ -81,19 +109,19 @@ get_tmcr_directory <- function() {
 #' @description Get the file path to the \code{tmcr-projects} folder, which contains the TMC R
 #' exercise projects.
 #'
-#' @usage get_projects_folder()
+#' @usage get_projects_directory()
 #'
 #' @details Reads the location of tmcr directory from .properties, creates the directory
 #' if it doesn't exist and returns the path.
 #'
 #' @return The path to tmcr directory
-get_projects_folder <- function() {
+get_projects_directory <- function() {
   properties <- read_properties()
   tmcr_directory <- properties$tmcr_projects
 
-  if (!dir.exists(tmcr_directory)) {
-    dir.create(tmcr_directory, recursive = TRUE)
-  }
+  # if (!dir.exists(tmcr_directory)) {
+  #   dir.create(tmcr_directory, recursive = TRUE)
+  # }
 
   return(tmcr_directory)
 }

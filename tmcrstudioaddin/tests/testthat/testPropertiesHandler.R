@@ -14,8 +14,7 @@ test_that("TMC's home directory is correct", {
   user_home <- normalizePath("~", winslash = "/")
   tmcr_directory <- file.path(user_home, "tmcr")
 
-  expect_equal(tmcr_directory,
-      get_tmcr_directory())
+  expect_equal(tmcr_directory, normalizePath(get_tmcr_directory()))
 
   restore_properties_file_backup()
 })
@@ -31,13 +30,13 @@ test_that("Properties are read as expected", {
   restore_properties_file_backup()
 })
 
-test_that("get_projects_folder-function works as expected", {
+test_that("get_projects_directory-function works as expected", {
   backup_properties_file()
 
   create_properties_file(tmcr_projects = "tmcproj")
   tmcr_path <- get_tmcr_directory()
   project_path <- paste(tmcr_path, "tmcproj", sep = .Platform$file.sep)
-  expect_equal(get_projects_folder(), project_path)
+  expect_equal(get_projects_directory(), project_path)
 
   restore_properties_file_backup()
 })
