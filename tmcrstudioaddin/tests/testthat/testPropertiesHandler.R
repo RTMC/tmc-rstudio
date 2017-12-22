@@ -1,3 +1,5 @@
+create_projects_directory()
+
 test_that("Properties created", {
   backup_properties_file()
 

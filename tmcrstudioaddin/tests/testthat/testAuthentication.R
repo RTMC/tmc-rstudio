@@ -1,3 +1,5 @@
+create_projects_directory()
+
 context("Logging in")
 httptest::with_mock_API({
   test_that("Fetching client ID and secret works", {
@@ -22,9 +24,9 @@ httptest::with_mock_API({
     expect_is(response, "character")
     expect_equal(substr(response, 0, 6), "Bearer")
 
-    expect_true(file.exists(credentials_path))
+    # expect_true(file.exists(credentials_path))
 
-    file.remove(credentials_path)
+    # file.remove(credentials_path)
   })
 
   test_that("False authentication (wrong username and password) fails and creates no file", {

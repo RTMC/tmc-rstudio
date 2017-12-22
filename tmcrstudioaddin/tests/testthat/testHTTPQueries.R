@@ -29,6 +29,8 @@
 #   }
 # })
 
+create_projects_directory()
+
 context("Fetching data")
 
 httptest::with_mock_API({
