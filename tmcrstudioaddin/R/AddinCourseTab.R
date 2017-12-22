@@ -64,7 +64,7 @@
 
 .courseTab <- function(input, output, session, globalReactiveValues) {
   observeEvent(input$refreshOrganizations, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     tmcrstudioaddin::disable_course_tab()
     organizations <- tmcrstudioaddin::getAllOrganizations()
@@ -76,7 +76,7 @@
   })
 
   observeEvent(input$organizationSelect, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     tmcrstudioaddin::disable_course_tab()
     organization <- input$organizationSelect
@@ -93,7 +93,7 @@
   exercise_map <<- list()
 
   observeEvent(input$courseSelect, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     tmcrstudioaddin::disable_course_tab()
     hide("all_exercises")
@@ -113,7 +113,7 @@
   }, ignoreInit=TRUE)
 
   observeEvent(input$refreshCourses, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     tmcrstudioaddin::disable_course_tab()
     organization <- input$organizationSelect
@@ -146,7 +146,7 @@
   })
 
   observeEvent(input$download, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     tmcrstudioaddin::disable_course_tab()
 

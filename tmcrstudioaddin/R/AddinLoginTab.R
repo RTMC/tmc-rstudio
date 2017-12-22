@@ -9,8 +9,8 @@
       uiOutput(outputId = ns("loginPane"))
     )
   )
-
 }
+
 .loginPane <- function(ns){
   credentials <- tmcrstudioaddin::getCredentials()
   serverAddress <- credentials$serverAddress
@@ -25,16 +25,17 @@
       actionButton(inputId = ns("resetServer"), label = "Reset server address"))
   ))
 }
+
 .logoutPane <- function(ns){
   return(tagList(h1("Log out"),
                  actionButton(inputId = ns("logout"), label = "Log out")))
 }
 
-.loginTab <- function(input, output, session) {
+.loginTab <- function(input, output, session, globalReactiveValues) {
   ns <- shiny::NS("login")
 
   .suggestServer()
-  
+
   output$loginPane <- renderUI({
     credentials <- tmcrstudioaddin::getCredentials()
     #if token is not defined, user is not logged in
@@ -47,7 +48,7 @@
   })
   
   observeEvent(input$login, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     tmcrstudioaddin::disable_login_tab()
 
@@ -71,7 +72,7 @@
   })
 
   observeEvent(input$logout, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     #overwrite credentials, so that they contain only the last login address
     tryCatch({
@@ -86,7 +87,7 @@
   })
 
   observeEvent(input$resetServer, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     updateTextInput(session, "serverAddress", value = "https://tmc.mooc.fi")
     disable("serverAddress")

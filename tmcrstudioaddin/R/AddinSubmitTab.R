@@ -36,7 +36,7 @@
 
   # This function is run when the Run tests -button is pressed
   runTestrunner <- observeEvent(input$runTests, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     tmcrstudioaddin::disable_submit_tab()
     runResults <- withProgress(message= 'Running tests', value = 1, {
@@ -59,7 +59,7 @@
   })
 
   submitExercise <- observeEvent(input$submit, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     tmcrstudioaddin::disable_submit_tab()
     submitRes <- NULL
@@ -76,18 +76,18 @@
   })
 
   showResults <- observeEvent(input$showAllResults, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     reactive$showAll = input$showAllResults
   })
 
   selectedExercises <- observeEvent(input$selectExercise, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
     selectedExercisePath <<- input$selectExercise
   })
 
   sourceExercise <- observeEvent(input$source, {
-    if(UI_disabled) return()
+    if(globalReactiveValues$UI_disabled) return()
 
     tmcrstudioaddin::disable_submit_tab()
 
